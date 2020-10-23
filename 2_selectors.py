@@ -6,21 +6,19 @@ selector = selectors.DefaultSelector()
 
 
 def server():
-    # SOCK_STREAM - поддержка протокола tcp
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    # Отключаем задержку по портам
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server_socket.bind(('localhost', 5000))
     server_socket.listen()
 
-    selector.register(fileobj=server_socket, events=selectors.EVEBT_READ, data=accept_connection)
+    selector.register(fileobj=server_socket, events=selectors.EVENT_READ, data=accept_connection)
 
 
 def accept_connection(server_socket):
         client_socket, addr = server_socket.accept()
         print('Connection addr ', addr)
 
-        selector.register(fileobj=client_socket, events=selectors.EVEBT_READ, data=send_message)
+        selector.register(fileobj=client_socket, events=selectors.EVENT_READ, data=send_message)
 
 
 def send_message(client_socket):
@@ -39,11 +37,6 @@ def event_loop():
     while True:
 
         events = selector.select()  # key, event
-
-        # SelectorKey
-        # fileobj
-        # events
-        # data
 
         for key, _ in events:
             callback = key.data     # get function (is inside attribute 'data')
